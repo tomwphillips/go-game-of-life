@@ -12,11 +12,16 @@ func CreateGrid(width int, height int) *Grid {
 	var g Grid
 	g.height = height
 	g.width = width
-	g.cells = make([][]bool, height)
-	for col_index, _ := range g.cells {
-		g.cells[col_index] = make([]bool, width)
-	}
+	g.cells = createCells(width, height)
 	return &g
+}
+
+func createCells(width int, height int) [][]bool {
+	cells := make([][]bool, height)
+	for col_index, _ := range cells {
+		cells[col_index] = make([]bool, width)
+	}
+	return cells
 }
 
 func (g *Grid) RandomlyInitialiseCells(probability float64) *Grid {
@@ -60,8 +65,21 @@ func (g *Grid) CountAliveNeighbours(x int, y int) int {
 	return count
 }
 
-func (g *Grid) Tick() *Grid{
-	return &Grid{}
+func (g *Grid) Tick() {
+	new_cells := createCells(g.width, g.height)
+	for x, row := range g.cells {
+		for y, _ := range row {
+			count := g.CountAliveNeighbours(x, y)
+			alive := g.getCell(x, y) 
+			if alive && (count == 2 || count == 3) {
+				new_cells[x][y] = true
+			}
+			if !alive && count == 3 {
+				new_cells[x][y] = true
+			}
+		}
+	}
+	g.cells = new_cells
 }
 
 func main() {

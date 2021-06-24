@@ -91,5 +91,33 @@ func TestCountAliveNeighbours(t *testing.T) {
 
 func TestTick(t *testing.T) {
 	g := CreateGrid(5, 5)
+	g.cells[2][1] = true
+	g.cells[2][2] = true
+	g.cells[2][3] = true
+
 	g.Tick()
+
+	type coordinate struct {
+		x int
+		y int
+	}
+
+	wants := map[coordinate]bool{
+		coordinate{1, 2}: true,
+		coordinate{2, 2}: true,
+		coordinate{3, 2}: true,
+	}
+
+	for x, row := range g.cells {
+		for y, _ := range row {
+			want, exists := wants[coordinate{x, y}]
+			got := g.cells[x][y]
+			if exists && want != got {
+				t.Errorf(`g.cell[%v][%v] = %v, want %v`, x, y, got, want)
+			}
+			if !exists && got == true {
+				t.Errorf(`g.cell[%v][%v] = %v, want false`, x, y, got)
+			}
+		}
+	}
 }
