@@ -1,3 +1,3 @@
-module github.com/tomwphillips/game-of-life
+module github.com/tomwphillips/go-game-of-life
 
 go 1.16
