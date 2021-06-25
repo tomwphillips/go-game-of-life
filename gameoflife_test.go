@@ -19,15 +19,15 @@ func TestCreateGrid(t *testing.T) {
 }
 
 func countAliveCells(g *Grid) int {
-	alive_count := 0
+	count := 0
 	for _, row := range g.cells {
-		for _, value := range row {
-			if value {
-				alive_count += 1
+		for _, alive := range row {
+			if alive {
+				count += 1
 			}
 		}
 	}
-	return alive_count
+	return count
 }
 
 func TestRandomlyInitialiseCells(t *testing.T) {
@@ -82,7 +82,7 @@ func TestCountAliveNeighbours(t *testing.T) {
 
 	for x := 0; x < g.width; x++ {
 		for y := 0; y < g.height; y++ {
-			if got := g.CountAliveNeighbours(x, y); got != 4 {
+			if got := g.countAliveNeighbours(x, y); got != 4 {
 				t.Errorf(`g.CountNeighbours(%v, %v) = %v, want 4`, x, y, got)
 			}
 		}

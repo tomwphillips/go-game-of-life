@@ -1,6 +1,10 @@
 package main
 
-import "math/rand"
+import (
+	"fmt"
+	"math/rand"
+	"time"
+)
 
 type Grid struct {
 	width  int
@@ -10,8 +14,8 @@ type Grid struct {
 
 func CreateGrid(width int, height int) *Grid {
 	var g Grid
-	g.height = height
 	g.width = width
+	g.height = height
 	g.cells = createCells(width, height)
 	return &g
 }
@@ -35,21 +39,21 @@ func (g *Grid) RandomlyInitialiseCells(probability float64) *Grid {
 
 func (g *Grid) getCell(x int, y int) bool {
 	if x == -1 {
-		x = g.width - 1
-	} else if x == g.width {
+		x = g.height - 1
+	} else if x == g.height {
 		x = 0
 	}
 
 	if y == -1 {
-		y = g.height - 1
-	} else if y == g.height {
+		y = g.width - 1
+	} else if y == g.width {
 		y = 0
 	}
  
 	return g.cells[x][y]
 }
 
-func (g *Grid) CountAliveNeighbours(x int, y int) int {
+func (g *Grid) countAliveNeighbours(x int, y int) int {
 	var count int
 	offsets := []int{-1, 0, 1}
 	for _, offset_x := range offsets {
@@ -69,7 +73,7 @@ func (g *Grid) Tick() {
 	new_cells := createCells(g.width, g.height)
 	for x, row := range g.cells {
 		for y, _ := range row {
-			count := g.CountAliveNeighbours(x, y)
+			count := g.countAliveNeighbours(x, y)
 			alive := g.getCell(x, y) 
 			if alive && (count == 2 || count == 3) {
 				new_cells[x][y] = true
@@ -82,10 +86,27 @@ func (g *Grid) Tick() {
 	g.cells = new_cells
 }
 
+func (g *Grid) Print () {
+	const clear_screen = "\033[2J"
+	fmt.Print(clear_screen)
+	for _, row := range g.cells {
+		for _, cell := range row {
+			if cell { 
+				fmt.Print("🟩")
+			} else {
+				fmt.Print(" ")
+			}
+		}	
+		fmt.Print("\n")	
+	}
+}
+
 func main() {
-	g := CreateGrid(3, 4)
-	g.RandomlyInitialiseCells(0.5)
-	for i := 0; i < 100; i++ {
+	g := CreateGrid(80, 24)
+	g.RandomlyInitialiseCells(0.1)
+	for {
+		g.Print()
 		g.Tick()
+		time.Sleep(100 * time.Millisecond)
 	}
 }
